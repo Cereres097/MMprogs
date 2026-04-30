@@ -1,21 +1,35 @@
-$u = "https://github.com"
-$p = "$env:TEMP\DocStats.exe"
+# Устанавливаем пути в кавычках для защиты от пробелов
+$url = "https://github.com"
+$path = "$env:TEMP\DocStats.exe"
 
-# Удаляем старый файл, если он есть (теперь без ошибок)
-if (Test-Path "$p") { Remove-Item "$p" -Force -ErrorAction SilentlyContinue }
+# 1. Полная очистка перед стартом
+if (Test-Path "$path") { 
+    Remove-Item "$path" -Force -ErrorAction SilentlyContinue 
+}
 
-Write-Host "Загрузка программы..." -ForegroundColor Cyan
-Invoke-WebRequest -Uri $u -OutFile "$p"
+Write-Host "Загрузка DocStats (около 70 МБ)..." -ForegroundColor Cyan
 
-# Проверка: если файл скачался слишком маленьким (меньше 1МБ), значит это не EXE
-if ((Get-Item "$p").Length -lt 1MB) {
-    Write-Host "Ошибка: Файл скачался некорректно. Проверьте ссылку в релизе!" -ForegroundColor Red
-    Remove-Item "$p"
+# 2. Скачивание
+try {
+    Invoke-WebRequest -Uri $url -OutFile "$path" -ErrorAction Stop
+} catch {
+    Write-Host "Ошибка при скачивании. Проверьте интернет или ссылку на GitHub." -ForegroundColor Red
     exit
 }
 
-Write-Host "Запуск..." -ForegroundColor Green
-& "$p"
+# 3. Проверка: если файл меньше 1 МБ, значит скачалась ошибка, а не программа
+if ((Get-Item "$path").Length -lt 1048576) {
+    Write-Host "Критическая ошибка: Скачанный файл поврежден или ссылка ведет на пустую страницу." -ForegroundColor Red
+    Remove-Item "$path" -Force
+    exit
+}
 
-# Удаляем после закрытия
-if (Test-Path "$p") { Remove-Item "$p" -Force -ErrorAction SilentlyContinue }
+Write-Host "Запуск программы..." -ForegroundColor Green
+
+# 4. Запуск (используем кавычки и амперсанд)
+& "$path"
+
+# 5. Очистка после закрытия
+if (Test-Path "$path") { 
+    Remove-Item "$path" -Force -ErrorAction SilentlyContinue 
+}
