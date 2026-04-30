@@ -1,0 +1,182 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
+using System.IO.Compression; 
+using iText.Kernel.Pdf;
+using ClosedXML.Excel;
+
+class Program
+{
+    static void Main()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("=== Утилита подсчета статистики (PDF, DOC, DOCX, ZIP) ===");
+            Console.Write("\nВведите путь к ГЛАВНОЙ папке (или 'exit' для выхода): ");
+            string? input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input) || input.ToLower() == "exit") break;
+            string mainFolderPath = input.Trim(' ', '"', '\'');
+
+            if (!Directory.Exists(mainFolderPath))
+            {
+                Console.WriteLine("Ошибка: Путь не найден. Попробуйте еще раз.");
+                Console.WriteLine("Нажмите любую клавишу...");
+                Console.ReadKey();
+                continue;
+            }
+
+            ProcessFolder(mainFolderPath);
+
+            Console.WriteLine("\n\nОбработка завершена.");
+            Console.Write("Хотите обработать еще одну папку? (y/n): ");
+            string? answer = Console.ReadLine()?.ToLower();
+            if (answer != "y" && answer != "д") break;
+        }
+    }
+
+    static void ProcessFolder(string mainFolderPath)
+    {
+        Type? wordType = Type.GetTypeFromProgID("Word.Application");
+        if (wordType == null)
+        {
+            Console.WriteLine("Ошибка: Microsoft Word не найден.");
+            return;
+        }
+
+        dynamic wordApp = Activator.CreateInstance(wordType)!;
+        wordApp.Visible = false;
+        wordApp.DisplayAlerts = 0;
+
+        var dataList = new List<FileRecord>();
+        string tempZipDir = Path.Combine(Path.GetTempPath(), "DocStats_Ex_" + Guid.NewGuid().ToString().Substring(0, 8));
+
+        try
+        {
+            var allEntries = Directory.EnumerateFiles(mainFolderPath, "*.*", SearchOption.AllDirectories)
+                .Where(f => !f.Contains("архив") && !f.Contains("Исходник для проверки")).ToList();
+
+            int total = allEntries.Count;
+            for (int i = 0; i < total; i++)
+            {
+                string entry = allEntries[i];
+                string ext = Path.GetExtension(entry).ToLower();
+                
+                if (ext == ".zip")
+                {
+                    try {
+                        if (Directory.Exists(tempZipDir)) Directory.Delete(tempZipDir, true);
+                        ZipFile.ExtractToDirectory(entry, tempZipDir);
+                        var zipFiles = Directory.GetFiles(tempZipDir, "*.*", SearchOption.AllDirectories);
+                        foreach (var zFile in zipFiles) 
+                            ProcessSingleFile(zFile, wordApp, dataList, entry); 
+                    } catch (Exception ex) {
+                        Console.WriteLine($"\nОшибка архива {Path.GetFileName(entry)}: {ex.Message}");
+                    }
+                }
+                else if (ext == ".pdf" || ext == ".docx" || ext == ".doc")
+                {
+                    ProcessSingleFile(entry, wordApp, dataList);
+                }
+            }
+
+            if (dataList.Count > 0)
+            {
+                string outputPath = GetSafePath(mainFolderPath);
+                SaveToExcel(dataList, outputPath);
+                Console.WriteLine($"\n\nУспех! Отчет сохранен: {Path.GetFileName(outputPath)}");
+                
+                try {
+                    Process.Start(new ProcessStartInfo(outputPath) { UseShellExecute = true });
+                } catch { }
+            }
+            else Console.WriteLine("\n\nПодходящие файлы не найдены.");
+        }
+        finally
+        {
+            wordApp.Quit();
+            if (Directory.Exists(tempZipDir)) try { Directory.Delete(tempZipDir, true); } catch { }
+        }
+    }
+
+    static string GetSafePath(string folder)
+    {
+        string baseName = Path.Combine(folder, "Statistics.xlsx");
+        if (!File.Exists(baseName)) return baseName;
+        try {
+            using (FileStream stream = File.Open(baseName, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) {
+                stream.Close();
+                return baseName;
+            }
+        }
+        catch (IOException) {
+            string timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            return Path.Combine(folder, $"Statistics_{timeStamp}.xlsx");
+        }
+    }
+
+    static void ProcessSingleFile(string filePath, dynamic wordApp, List<FileRecord> list, string? archiveName = null)
+    {
+        string fileName = Path.GetFileName(filePath);
+        if (fileName.StartsWith("~$") || fileName.Contains("Statistics")) return;
+
+        Console.Write($"\rОбработка: {fileName.PadRight(35).Substring(0, 35)}...");
+
+        string? dirPath = archiveName != null ? Path.GetDirectoryName(archiveName) : Path.GetDirectoryName(filePath);
+        string folderName = Path.GetFileName(dirPath) ?? "Корень";
+        string ext = Path.GetExtension(filePath).ToLower();
+
+        try
+        {
+            if (ext == ".pdf")
+            {
+                using var pdfReader = new PdfReader(filePath);
+                using var pdfDoc = new PdfDocument(pdfReader);
+                list.Add(new FileRecord(dirPath ?? "", folderName, fileName + (archiveName != null ? " (из ZIP)" : ""), pdfDoc.GetNumberOfPages(), null, null, "PDF"));
+            }
+            else if (ext == ".docx" || ext == ".doc")
+            {
+                dynamic doc = wordApp.Documents.Open(filePath, ReadOnly: true, ConfirmConversions: false);
+                int chars = doc.ComputeStatistics(5); 
+                double uchet = chars / 1800.0;
+                doc.Close(false);
+                list.Add(new FileRecord(dirPath ?? "", folderName, fileName + (archiveName != null ? " (из ZIP)" : ""), null, chars, Math.Round(uchet, 2), "WORD"));
+            }
+        }
+        catch {
+            list.Add(new FileRecord(dirPath ?? "", folderName, fileName, null, null, null, "ОШИБКА"));
+        }
+    }
+
+    static void SaveToExcel(List<FileRecord> data, string outputPath)
+    {
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Статистика");
+        
+        var headers = new[] { "Путь к папке", "Имя папки", "Имя файла", "PDF (стр)", "WORD (знаки)", "WORD (учет/1800)", "Тип" };
+        for (int j = 0; j < headers.Length; j++) ws.Cell(1, j + 1).Value = headers[j];
+
+        for (int i = 0; i < data.Count; i++)
+        {
+            ws.Cell(i + 2, 1).Value = data[i].FolderPath;
+            ws.Cell(i + 2, 2).Value = data[i].FolderName;
+            ws.Cell(i + 2, 3).Value = data[i].FileName;
+            
+            if (data[i].PdfPages.HasValue) ws.Cell(i + 2, 4).Value = data[i].PdfPages.Value;
+            if (data[i].WordChars.HasValue) ws.Cell(i + 2, 5).Value = data[i].WordChars.Value;
+            if (data[i].WordUchet.HasValue) ws.Cell(i + 2, 6).Value = data[i].WordUchet.Value;
+            
+            ws.Cell(i + 2, 7).Value = data[i].FileType;
+        }
+
+        ws.RangeUsed().SetAutoFilter();
+        ws.SheetView.FreezeRows(1);
+        ws.Columns().AdjustToContents();
+        workbook.SaveAs(outputPath);
+    }
+}
+
+record FileRecord(string FolderPath, string FolderName, string FileName, double? PdfPages, double? WordChars, double? WordUchet, string FileType);
