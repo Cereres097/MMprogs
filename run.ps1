@@ -1,35 +1,34 @@
-# Устанавливаем пути в кавычках для защиты от пробелов
 $url = "https://github.com"
-$path = "$env:TEMP\DocStats.exe"
+$localPath = Join-Path $env:TEMP "DocStats.exe"
 
-# 1. Полная очистка перед стартом
-if (Test-Path "$path") { 
-    Remove-Item "$path" -Force -ErrorAction SilentlyContinue 
+# 1. Чистим старые копии
+if (Test-Path -Path $localPath) { 
+    Remove-Item -Path $localPath -Force -ErrorAction SilentlyContinue 
 }
 
-Write-Host "Загрузка DocStats (около 70 МБ)..." -ForegroundColor Cyan
+Write-Host "Загрузка DocStats.exe..." -ForegroundColor Cyan
 
-# 2. Скачивание
+# 2. Скачиваем файл
 try {
-    Invoke-WebRequest -Uri $url -OutFile "$path" -ErrorAction Stop
+    Invoke-WebRequest -Uri $url -OutFile $localPath -ErrorAction Stop
 } catch {
-    Write-Host "Ошибка при скачивании. Проверьте интернет или ссылку на GitHub." -ForegroundColor Red
-    exit
+    Write-Host "Ошибка: Не удалось скачать файл. Проверьте интернет." -ForegroundColor Red
+    return
 }
 
-# 3. Проверка: если файл меньше 1 МБ, значит скачалась ошибка, а не программа
-if ((Get-Item "$path").Length -lt 1048576) {
-    Write-Host "Критическая ошибка: Скачанный файл поврежден или ссылка ведет на пустую страницу." -ForegroundColor Red
-    Remove-Item "$path" -Force
-    exit
+# 3. Проверка: если скачался текст вместо программы
+if ((Get-Item $localPath).Length -lt 1000000) {
+    Write-Host "Ошибка: Скачанный файл слишком мал. Ссылка на GitHub может быть неверной." -ForegroundColor Red
+    Remove-Item $localPath -Force
+    return
 }
 
 Write-Host "Запуск программы..." -ForegroundColor Green
 
-# 4. Запуск (используем кавычки и амперсанд)
-& "$path"
+# 4. Запуск в обход проблем с путями
+Start-Process -FilePath $localPath -Wait
 
 # 5. Очистка после закрытия
-if (Test-Path "$path") { 
-    Remove-Item "$path" -Force -ErrorAction SilentlyContinue 
+if (Test-Path -Path $localPath) { 
+    Remove-Item -Path $localPath -Force -ErrorAction SilentlyContinue 
 }
