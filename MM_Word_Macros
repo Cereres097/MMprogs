@@ -1,0 +1,629 @@
+Attribute VB_Name = "MedMark"
+Sub FixKeyboardLayout()
+    Dim myText As String
+    Dim newText As String
+    Dim i As Long
+    Dim c As String
+    
+    If Selection.Type = wdSelectionIP Then
+        MsgBox "Please select some text first"
+        Exit Sub
+    End If
+    
+    myText = Selection.text
+    newText = ""
+    
+    For i = 1 To Len(myText)
+        c = Mid(myText, i, 1)
+        newText = newText & ConvertChar(c)
+    Next i
+    
+    Selection.text = newText
+End Sub
+
+Function ConvertChar(c As String) As String
+    Select Case c
+        ' English to Russian
+        Case "q": ConvertChar = "й"
+        Case "w": ConvertChar = "ц"
+        Case "e": ConvertChar = "у"
+        Case "r": ConvertChar = "к"
+        Case "t": ConvertChar = "е"
+        Case "y": ConvertChar = "н"
+        Case "u": ConvertChar = "г"
+        Case "i": ConvertChar = "ш"
+        Case "o": ConvertChar = "щ"
+        Case "p": ConvertChar = "з"
+        Case "[": ConvertChar = "х"
+        Case "a": ConvertChar = "ф"
+        Case "s": ConvertChar = "ы"
+        Case "d": ConvertChar = "в"
+        Case "f": ConvertChar = "а"
+        Case "g": ConvertChar = "п"
+        Case "h": ConvertChar = "р"
+        Case "j": ConvertChar = "о"
+        Case "k": ConvertChar = "л"
+        Case "l": ConvertChar = "д"
+        Case ";": ConvertChar = "ж"
+        Case "'": ConvertChar = "э"
+        Case "z": ConvertChar = "я"
+        Case "x": ConvertChar = "ч"
+        Case "c": ConvertChar = "с"
+        Case "v": ConvertChar = "м"
+        Case "b": ConvertChar = "и"
+        Case "n": ConvertChar = "т"
+        Case "m": ConvertChar = "ь"
+        Case ",": ConvertChar = "б"
+        Case ".": ConvertChar = "ю"
+        
+        ' Russian to English
+        Case "й": ConvertChar = "q"
+        Case "ц": ConvertChar = "w"
+        Case "у": ConvertChar = "e"
+        Case "к": ConvertChar = "r"
+        Case "е": ConvertChar = "t"
+        Case "н": ConvertChar = "y"
+        Case "г": ConvertChar = "u"
+        Case "ш": ConvertChar = "i"
+        Case "щ": ConvertChar = "o"
+        Case "з": ConvertChar = "p"
+        Case "х": ConvertChar = "["
+        Case "ф": ConvertChar = "a"
+        Case "ы": ConvertChar = "s"
+        Case "в": ConvertChar = "d"
+        Case "а": ConvertChar = "f"
+        Case "п": ConvertChar = "g"
+        Case "р": ConvertChar = "h"
+        Case "о": ConvertChar = "j"
+        Case "л": ConvertChar = "k"
+        Case "д": ConvertChar = "l"
+        Case "ж": ConvertChar = ";"
+        Case "э": ConvertChar = "'"
+        Case "я": ConvertChar = "z"
+        Case "ч": ConvertChar = "x"
+        Case "с": ConvertChar = "c"
+        Case "м": ConvertChar = "v"
+        Case "и": ConvertChar = "b"
+        Case "т": ConvertChar = "n"
+        Case "ь": ConvertChar = "m"
+        Case "б": ConvertChar = ","
+        Case "ю": ConvertChar = "."
+        
+        ' Uppercase English to Russian
+        Case "Q": ConvertChar = "Й"
+        Case "W": ConvertChar = "Ц"
+        Case "E": ConvertChar = "У"
+        Case "R": ConvertChar = "К"
+        Case "T": ConvertChar = "Е"
+        Case "Y": ConvertChar = "Н"
+        Case "U": ConvertChar = "Г"
+        Case "I": ConvertChar = "Ш"
+        Case "O": ConvertChar = "Щ"
+        Case "P": ConvertChar = "З"
+        Case "{": ConvertChar = "Х"
+        Case "A": ConvertChar = "Ф"
+        Case "S": ConvertChar = "Ы"
+        Case "D": ConvertChar = "В"
+        Case "F": ConvertChar = "А"
+        Case "G": ConvertChar = "П"
+        Case "H": ConvertChar = "Р"
+        Case "J": ConvertChar = "О"
+        Case "K": ConvertChar = "Л"
+        Case "L": ConvertChar = "Д"
+        Case ":": ConvertChar = "Ж"
+        Case """": ConvertChar = "Э"
+        Case "Z": ConvertChar = "Я"
+        Case "X": ConvertChar = "Ч"
+        Case "C": ConvertChar = "С"
+        Case "V": ConvertChar = "М"
+        Case "B": ConvertChar = "И"
+        Case "N": ConvertChar = "Т"
+        Case "M": ConvertChar = "Ь"
+        Case "<": ConvertChar = "Б"
+        Case ">": ConvertChar = "Ю"
+        
+        ' Uppercase Russian to English
+        Case "Й": ConvertChar = "Q"
+        Case "Ц": ConvertChar = "W"
+        Case "У": ConvertChar = "E"
+        Case "К": ConvertChar = "R"
+        Case "Е": ConvertChar = "T"
+        Case "Н": ConvertChar = "Y"
+        Case "Г": ConvertChar = "U"
+        Case "Ш": ConvertChar = "I"
+        Case "Щ": ConvertChar = "O"
+        Case "З": ConvertChar = "P"
+        Case "Х": ConvertChar = "{"
+        Case "Ф": ConvertChar = "A"
+        Case "Ы": ConvertChar = "S"
+        Case "В": ConvertChar = "D"
+        Case "А": ConvertChar = "F"
+        Case "П": ConvertChar = "G"
+        Case "Р": ConvertChar = "H"
+        Case "О": ConvertChar = "J"
+        Case "Л": ConvertChar = "K"
+        Case "Д": ConvertChar = "L"
+        Case "Ж": ConvertChar = ":"
+        Case "Э": ConvertChar = """"
+        Case "Я": ConvertChar = "Z"
+        Case "Ч": ConvertChar = "X"
+        Case "С": ConvertChar = "C"
+        Case "М": ConvertChar = "V"
+        Case "И": ConvertChar = "B"
+        Case "Т": ConvertChar = "N"
+        Case "Ь": ConvertChar = "M"
+        Case "Б": ConvertChar = "<"
+        Case "Ю": ConvertChar = ">"
+        
+        Case Else: ConvertChar = c
+    End Select
+End Function
+
+Sub EnDates()
+    
+    With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Forward = True
+        .Wrap = wdFindContinue
+        .MatchWildcards = True
+        
+        ' 1
+        .text = "([0-9]{2})\.([0-9]{2})\.([0-9]{4})"
+        .Replacement.text = "\1/\2/\3"
+        .Execute Replace:=wdReplaceAll
+        
+        ' 2
+        .text = "([0-9]{1})\.([0-9]{2})\.([0-9]{4})"
+        .Replacement.text = "0\1/\2/\3"
+        .Execute Replace:=wdReplaceAll
+        
+        ' 3
+        .text = "([0-9]{2})\.([0-9]{1})\.([0-9]{4})"
+        .Replacement.text = "\1/0\2/\3"
+        .Execute Replace:=wdReplaceAll
+        
+        ' 4
+        .text = "([0-9]{1})\.([0-9]{1})\.([0-9]{4})"
+        .Replacement.text = "0\1/0\2/\3"
+        .Execute Replace:=wdReplaceAll
+    End With
+    
+    MsgBox "Готово", vbInformation
+End Sub
+
+Sub RusDates()
+    
+    With Selection.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Forward = True
+        .Wrap = wdFindContinue
+        .MatchWildcards = True
+        
+        ' 1
+        .text = "([0-9]{2})/([0-9]{2})/([0-9]{4})"
+        .Replacement.text = "\1.\2.\3"
+        .Execute Replace:=wdReplaceAll
+        
+        ' 2
+        .text = "([0-9]{1})/([0-9]{2})/([0-9]{4})"
+        .Replacement.text = "0\1.\2/.3"
+        .Execute Replace:=wdReplaceAll
+        
+        ' 3
+        .text = "([0-9]{2})/([0-9]{1})/([0-9]{4})"
+        .Replacement.text = "\1.0\2.\3"
+        .Execute Replace:=wdReplaceAll
+        
+        ' 4
+        .text = "([0-9]{1})/([0-9]{1})/([0-9]{4})"
+        .Replacement.text = "0\1.0\2.\3"
+        .Execute Replace:=wdReplaceAll
+    End With
+    
+    MsgBox "Готово", vbInformation
+End Sub
+
+Sub elochki()
+    Dim sSingleQuotes As String
+    ' Собираем все виды одинарных кавычек: прямая ('), левая (‘) и правая (’)
+    sSingleQuotes = Chr(39) & ChrW(8216) & ChrW(8217)
+
+    With ActiveDocument.Content.Find
+        .ClearFormatting
+        .Replacement.ClearFormatting
+        .Forward = True
+        .Wrap = wdFindContinue
+        .MatchWildcards = True
+        
+        ' 1. Заменяем двойные прямые кавычки "текст" -> «\1»
+        .text = """([!"" ]@)"""
+        .Replacement.text = "«\1»"
+        .Execute Replace:=wdReplaceAll
+        
+        ' 2. Заменяем любые одинарные кавычки 'текст' -> «\1»
+        .text = "[" & sSingleQuotes & "]([! " & sSingleQuotes & "]@)[" & sSingleQuotes & "]"
+        .Replacement.text = "«\1»"
+        .Execute Replace:=wdReplaceAll
+    End With
+    
+    MsgBox "Все кавычки заменены на «ёлочки»!", vbInformation, "Готово"
+End Sub
+
+Sub ReplaceDImproved()
+    Dim regEx As Object
+    Dim matches As Object
+    Dim match As Object
+    Dim i As Long
+    Dim text As String
+    Dim para As Paragraph
+    Dim isHeader As Boolean
+    Dim isSectionNumber As Boolean
+    
+    Set regEx = CreateObject("VBScript.RegExp")
+    regEx.Global = True
+    regEx.Pattern = "(\b\d+)\.(\d+)"
+    
+    Application.ScreenUpdating = False
+    
+    ' Обрабатываем весь документ по абзацам
+    For Each para In ActiveDocument.Paragraphs
+        text = para.Range.text
+        isHeader = False
+        
+        ' ПРОВЕРКА ЗАГОЛОВКА
+        If IsSectionHeaderImproved(text) Then
+            isHeader = True
+        End If
+        
+        If Not isHeader Then
+            Set matches = regEx.Execute(text)
+            
+            For i = matches.Count - 1 To 0 Step -1
+                Set match = matches(i)
+                
+                ' ПРОВЕРЯЕМ: не номер ли это раздела И не дата ли это?
+                isSectionNumber = IsSectionNumberInText(text, match.FirstIndex, match.length)
+                
+                If Not IsLikelyDate(text, match.FirstIndex, match.length) And Not isSectionNumber Then
+                    With para.Range
+                        .Start = .Start + match.FirstIndex
+                        .End = .Start + match.length
+                        .text = match.SubMatches(0) & "," & match.SubMatches(1)
+                    End With
+                End If
+            Next i
+        End If
+    Next para
+    
+    Application.ScreenUpdating = True
+    MsgBox "Замена завершена!"
+End Sub
+
+' ФУНКЦИЯ ПРОВЕРКИ НОМЕРА РАЗДЕЛА В ТЕКСТЕ
+Function IsSectionNumberInText(text As String, position As Long, length As Long) As Boolean
+    Dim startPos As Long
+    Dim endPos As Long
+    Dim contextBefore As String
+    Dim contextAfter As String
+    Dim foundText As String
+    
+    startPos = position + 1
+    endPos = startPos + length - 1
+    foundText = Mid(text, startPos, length)
+    
+    ' Берем контекст вокруг найденного текста
+    contextBefore = ""
+    contextAfter = ""
+    
+    If startPos > 20 Then
+        contextBefore = Mid(text, startPos - 20, 20)
+    ElseIf startPos > 1 Then
+        contextBefore = Mid(text, 1, startPos - 1)
+    End If
+    
+    If endPos + 20 <= Len(text) Then
+        contextAfter = Mid(text, endPos + 1, 20)
+    ElseIf endPos < Len(text) Then
+        contextAfter = Mid(text, endPos + 1)
+    End If
+    
+    ' ПРИЗНАКИ НОМЕРА РАЗДЕЛА В ТЕКСТЕ:
+    
+    ' 1. Если перед числом есть слова "раздел", "section" и т.д.
+    If LCase(contextBefore) Like "*раздел*" Or _
+       LCase(contextBefore) Like "*section*" Or _
+       LCase(contextBefore) Like "*пункт*" Or _
+       LCase(contextBefore) Like "*глава*" Then
+        IsSectionNumberInText = True
+        Exit Function
+    End If
+    
+    ' 2. Если найденный текст имеет формат номера раздела
+    If foundText Like "*.*.*" Then
+        Dim parts() As String
+        parts = Split(foundText, ".")
+        If UBound(parts) >= 2 Then
+            IsSectionNumberInText = True
+            Exit Function
+        End If
+    End If
+    
+    ' 3. Если после числа есть буквы S, P, G
+    If contextAfter Like ".[SPG]*" Or contextAfter Like ".[SPGspg]*" Then
+        IsSectionNumberInText = True
+        Exit Function
+    End If
+    
+    IsSectionNumberInText = False
+End Function
+
+' ФУНКЦИЯ ПРОВЕРКИ ЗАГОЛОВКОВ
+Function IsSectionHeaderImproved(text As String) As Boolean
+    text = Trim(text)
+    
+    ' Пропускаем пустые абзацы
+    If text = "" Then
+        IsSectionHeaderImproved = False
+        Exit Function
+    End If
+    
+    ' ПРОВЕРКА 1: Текст начинается с ЧИСЛА-ТОЧКИ-ЧИСЛА
+    If text Like "#.*" Then
+        Dim firstPart As String
+        firstPart = Split(text, " ")(0)
+        
+        If firstPart Like "#.#" Then
+            IsSectionHeaderImproved = True
+            Exit Function
+        End If
+    End If
+    
+    ' ПРОВЕРКА 2: Сложные номера разделов
+    If text Like "#.*.*" Then
+        Dim firstPartComplex As String
+        firstPartComplex = Split(text, " ")(0)
+        
+        Dim dotCount As Integer
+        dotCount = Len(firstPartComplex) - Len(Replace(firstPartComplex, ".", ""))
+        
+        If dotCount >= 2 Then
+            IsSectionHeaderImproved = True
+            Exit Function
+        End If
+    End If
+    
+    ' ПРОВЕРКА 3: Короткий текст с большим количеством точек
+    If Len(text) < 100 Then
+        Dim totalDots As Integer
+        totalDots = Len(text) - Len(Replace(text, ".", ""))
+        
+        If totalDots >= 3 And totalDots > Len(text) / 30 Then
+            IsSectionHeaderImproved = True
+            Exit Function
+        End If
+    End If
+    
+    IsSectionHeaderImproved = False
+End Function
+
+' ФУНКЦИЯ ПРОВЕРКИ ДАТ
+Function IsLikelyDate(text As String, position As Long, length As Long) As Boolean
+    Dim startPos As Long
+    Dim endPos As Long
+    Dim before As String
+    Dim after As String
+    
+    startPos = position + 1
+    endPos = startPos + length - 1
+    
+    ' Смотрим символы ДО найденного фрагмента
+    If startPos > 1 Then
+        before = Mid(text, startPos - 1, 1)
+    End If
+    
+    ' Смотрим символы ПОСЛЕ найденного фрагмента
+    If endPos < Len(text) Then
+        after = Mid(text, endPos + 1, 1)
+    End If
+    
+    ' Если перед числом есть цифра или после числа есть точка - вероятно это дата
+    If (before Like "#" And after = ".") Or _
+       (after = "." And endPos + 4 <= Len(text) And Mid(text, endPos + 2, 4) Like "####") Then
+        IsLikelyDate = True
+    Else
+        IsLikelyDate = False
+    End If
+End Function
+
+
+Sub FormatSelectedTable()
+    Dim tbl As Table
+    Dim c As Cell
+    Dim cellText As String
+    
+    If Selection.Information(wdWithInTable) Then
+        Set tbl = Selection.Tables(1)
+        
+        ' 1. Удаляем табуляцию
+        With tbl.Range.Find
+            .Text = "^t"
+            .Replacement.Text = ""
+            .Execute Replace:=wdReplaceAll
+        End With
+
+        ' 2. Чистим ячейки от мусора (пробелы и лишние переносы в конце)
+        For Each c In tbl.Range.Cells
+            cellText = Left(c.Range.Text, Len(c.Range.Text) - 2)
+            Do While Right(cellText, 1) = " " Or Right(cellText, 1) = Chr(13) Or Right(cellText, 1) = Chr(10)
+                cellText = Left(cellText, Len(cellText) - 1)
+                If Len(cellText) = 0 Then Exit Do
+            Loop
+            c.Range.Text = LTrim(cellText)
+        Next c
+
+        With tbl
+            ' 3. СБРОС ВЫСОТЫ СТРОК (Чтобы текст не вылетал)
+            With .Rows
+                .HeightRule = wdRowHeightAuto ' Автоматическая высота по тексту
+                .Height = 0 ' Сброс фиксированного значения
+                .AllowBreakAcrossPages = True ' Разрешить перенос строк на след. страницу
+            End With
+
+            ' 4. Шрифт
+            With .Range.Font
+                .Name = "Times New Roman"
+                .Size = 10
+            End With
+            
+            ' 5. Абзацы и центр
+            With .Range.ParagraphFormat
+                .LeftIndent = 0
+                .RightIndent = 0
+                .FirstLineIndent = 0
+                .SpaceBefore = 0
+                .SpaceAfter = 0
+                .LineSpacingRule = wdLineSpaceSingle
+                .Alignment = wdAlignParagraphCenter
+            End With
+
+            ' 6. Поля (Padding)
+            .LeftPadding = CentimetersToPoints(0.1)
+            .RightPadding = CentimetersToPoints(0.1)
+            .TopPadding = CentimetersToPoints(0.05)
+            .BottomPadding = CentimetersToPoints(0.05)
+            
+            ' 7. Настройка ширины
+            .AllowAutoFit = True
+            .AutoFitBehavior wdAutoFitContent
+            .AllowAutoFit = False ' Теперь можно тягать границы
+            
+            ' 8. Вертикальный центр
+            .Range.Cells.VerticalAlignment = wdCellAlignVerticalCenter
+            
+        End With
+    Else
+        MsgBox "Сначала поставьте курсор внутрь таблицы!", vbExclamation
+    End If
+End Sub
+
+
+Sub FormatSelectedCellsOnly()
+    Dim c As Cell
+    Dim cellText As String
+    
+    If Selection.Information(wdWithInTable) Then
+        ' Отключаем обновление экрана для скорости
+        Application.ScreenUpdating = False
+        
+        ' 1. Сначала попробуем задать автовысоту для всей таблицы сразу
+        ' Это самый безопасный способ для таблиц с объединенными ячейками
+        On Error Resume Next
+        Selection.Tables(1).Rows.HeightRule = wdRowHeightAuto
+        Selection.Tables(1).Rows.Height = 0
+        On Error GoTo 0
+
+        ' 2. Цикл по выделенным ячейкам
+        For Each c In Selection.Cells
+            ' Очистка текста от мусора
+            cellText = Left(c.Range.Text, Len(c.Range.Text) - 2)
+            
+            ' Удаляем табы внутри
+            cellText = Replace(cellText, Chr(9), "")
+            
+            ' Удаляем лишние пробелы и энтеры в конце
+            Do While Right(cellText, 1) = " " Or Right(cellText, 1) = Chr(13) Or Right(cellText, 1) = Chr(10)
+                cellText = Left(cellText, Len(cellText) - 1)
+                If Len(cellText) = 0 Then Exit Do
+            Loop
+            
+            ' Возвращаем чистый текст
+            c.Range.Text = LTrim(cellText)
+            
+            ' Форматирование шрифта
+            With c.Range.Font
+                .Name = "Times New Roman"
+                .Size = 10
+            End With
+            
+            ' Абзацы: обнуляем отступы и ставим центр
+            With c.Range.ParagraphFormat
+                .LeftIndent = 0
+                .RightIndent = 0
+                .FirstLineIndent = 0
+                .SpaceBefore = 0
+                .SpaceAfter = 0
+                .LineSpacingRule = wdLineSpaceSingle
+                .Alignment = wdAlignParagraphCenter
+            End With
+            
+            ' Вертикальный центр в ячейке
+            c.VerticalAlignment = wdCellAlignVerticalCenter
+        Next c
+        
+        Application.ScreenUpdating = True
+        MsgBox "Готово! Объединенные ячейки больше не мешают.", vbInformation
+    Else
+        MsgBox "Сначала выделите ячейки!", vbExclamation
+    End If
+End Sub
+
+
+
+Sub SwapDotComma()
+    Dim r As Range
+    
+    ' Проверка на наличие выделения
+    If Selection.Type = wdSelectionIP Then
+        Exit Sub
+    End If
+
+    ' ПРОВЕРКА: Если мы внутри таблицы и выделены ячейки
+    If Selection.Information(wdWithInTable) Then
+        Dim c As Cell
+        On Error Resume Next
+        If Selection.Cells.Count > 0 Then
+            For Each c In Selection.Cells
+                ProcessRange c.Range
+            Next c
+            Exit Sub
+        End If
+        On Error GoTo 0
+    End If
+    
+    ' Если это просто текст (не ячейки)
+    ProcessRange Selection.Range
+End Sub
+
+' Вспомогательная подпрограмма
+Private Sub ProcessRange(rng As Range)
+    Dim txt As String, result As String
+    Dim i As Long, char As String
+    
+    txt = rng.text
+    
+    ' Отрезаем символы конца ячейки таблицы, если они есть
+    If Right(txt, 1) = Chr(7) Then
+        txt = Left(txt, Len(txt) - 2)
+    End If
+    
+    result = ""
+    For i = 1 To Len(txt)
+        char = Mid(txt, i, 1)
+        If char = "." Then
+            result = result & ","
+        ElseIf char = "," Then
+            result = result & "."
+        Else
+            result = result & char
+        End If
+    Next i
+    
+    ' Заменяем текст только в пределах данных (не затирая маркер ячейки)
+    Dim targetRng As Range
+    Set targetRng = rng.Duplicate
+    If Right(targetRng.text, 1) = Chr(7) Then targetRng.End = targetRng.End - 1
+    targetRng.text = result
+End Sub
+
